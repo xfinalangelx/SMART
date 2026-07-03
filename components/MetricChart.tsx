@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import moment from 'moment';
-import { CartesianChart, Line, Bar, Scatter, AreaRange } from 'victory-native';
-import { useFont } from '@shopify/react-native-skia';
+import { CartesianChart, Line, Bar, Scatter, AreaRange, useChartPressState } from 'victory-native';
+import { Circle, RoundedRect, Text as SkiaText, useFont } from '@shopify/react-native-skia';
 import { GraphPoint } from '@/lib/supabase';
 import { SmartColors } from '@/constants/theme';
 
@@ -25,6 +25,43 @@ const formatValue = (value: number): string => {
   return `${Math.round(value * 100) / 100}`;
 };
 
+function Tooltip({
+  x,
+  y,
+  value,
+  dateLabel,
+  unit,
+  color,
+  font,
+}: {
+  x: number;
+  y: number;
+  value: number;
+  dateLabel: string;
+  unit: string;
+  color: string;
+  font: NonNullable<ReturnType<typeof useFont>>;
+}) {
+  const label = `${formatValue(value)} ${unit}`;
+  const dateLine = dateLabel;
+  const labelWidth = font.measureText(label).width;
+  const dateWidth = font.measureText(dateLine).width;
+  const boxW = Math.max(labelWidth, dateWidth) + 20;
+  const boxH = 40;
+  const boxX = x - boxW / 2;
+  const boxY = y - boxH - 12;
+
+  return (
+    <>
+      <Circle cx={x} cy={y} r={7} color={color} opacity={0.3} />
+      <Circle cx={x} cy={y} r={5} color={color} />
+      <RoundedRect x={boxX} y={boxY} width={boxW} height={boxH} r={8} color="#333" />
+      <SkiaText x={boxX + 10} y={boxY + 16} text={dateLine} font={font} color="#CCC" />
+      <SkiaText x={boxX + 10} y={boxY + 32} text={label} font={font} color="#FFF" />
+    </>
+  );
+}
+
 export default function MetricChart({
   points,
   color,
@@ -35,12 +72,17 @@ export default function MetricChart({
   language,
 }: MetricChartProps) {
   const font = useFont(require('../assets/fonts/Montserrat-Medium.ttf'), 11);
+  const tooltipFont = useFont(require('../assets/fonts/Montserrat-SemiBold.ttf'), 12);
+  const { state: pressState, isActive: isPressActive } = useChartPressState({
+    x: 0 as number,
+    y: { value: 0 },
+  });
 
   const sorted = [...points]
     .filter((p) => p && p.date && p.value != null && !isNaN(new Date(p.date).getTime()))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  if (sorted.length === 0 || !font) return null;
+  if (sorted.length === 0 || !font || !tooltipFont) return null;
 
   const values = sorted.map((p) => Number(p.value) || 0);
   const dataMax = Math.max(...values);
@@ -68,7 +110,7 @@ export default function MetricChart({
 
   const spanDays =
     (chartData[chartData.length - 1].x - chartData[0].x) / (24 * 60 * 60 * 1000);
-  const dateFormat = spanDays > 150 ? 'MMM YY' : 'DD MMM';
+  const dateFormat = spanDays > 150 ? 'MMM YY' : 'DD MMM YYYY';
 
   const yKeys: ('value' | 'bandLow' | 'bandHigh')[] = hasBand
     ? ['value', 'bandLow', 'bandHigh']
@@ -98,7 +140,8 @@ export default function MetricChart({
           data={chartData}
           xKey="x"
           yKeys={yKeys}
-          domainPadding={{ left: chartType === 'bar' ? 32 : 16, right: chartType === 'bar' ? 32 : 16, top: 24, bottom: 24 }}
+          chartPressState={pressState}
+          domainPadding={{ left: 16, right: 16, top: 24, bottom: 24 }}
           axisOptions={{
             font,
             tickCount: { x: Math.min(4, chartData.length), y: 5 },
@@ -111,11 +154,27 @@ export default function MetricChart({
           {({ points: chartPoints, chartBounds }) => (
             <>
               {hasBand && (
-                <AreaRange
-                  upperPoints={chartPoints.bandHigh!}
-                  lowerPoints={chartPoints.bandLow!}
-                  color={SmartColors.normalBand}
-                />
+                <>
+                  <AreaRange
+                    upperPoints={chartPoints.bandHigh!}
+                    lowerPoints={chartPoints.bandLow!}
+                    color={SmartColors.normalBand}
+                  />
+                  <Line
+                    points={chartPoints.bandHigh!}
+                    color="#4CAF50"
+                    strokeWidth={1.5}
+                    opacity={0.5}
+                  />
+                  {bandLow > 0 && (
+                    <Line
+                      points={chartPoints.bandLow!}
+                      color="#4CAF50"
+                      strokeWidth={1.5}
+                      opacity={0.5}
+                    />
+                  )}
+                </>
               )}
               {chartType === 'bar' ? (
                 <Bar
@@ -139,9 +198,20 @@ export default function MetricChart({
                   <Scatter
                     points={single ? chartPoints.value.slice(-1) : chartPoints.value}
                     color={color}
-                    radius={4}
+                    radius={5}
                   />
                 </>
+              )}
+              {isPressActive && (
+                <Tooltip
+                  x={pressState.x.position.value}
+                  y={pressState.y.value.position.value}
+                  value={pressState.y.value.value.value}
+                  dateLabel={moment(Number(pressState.x.value.value)).format('DD MMM YYYY')}
+                  unit={unit}
+                  color={color}
+                  font={tooltipFont}
+                />
               )}
             </>
           )}

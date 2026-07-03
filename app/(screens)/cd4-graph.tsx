@@ -21,7 +21,7 @@ export default function Cd4GraphScreen() {
       label: { en: 'CD4 Count', bm: 'Kiraan CD4' },
       unit: 'cells/mm³',
       color: SmartColors.track,
-      chartType: 'bar',
+      chartType: 'line',
       normalRange: { low: 500, high: 1500 },
       placeholder: { en: 'CD4 value (e.g: 500)', bm: 'Nilai CD4 (cth: 500)' },
       ...bind('cd4'),
@@ -46,8 +46,8 @@ export default function Cd4GraphScreen() {
     <MetricScreen
       title={{ en: 'CD4 & Viral Load', bm: 'CD4 & Viral Load' }}
       description={{
-        en: 'Track your CD4 count (bar chart) and viral load (line chart) separately — select which value you want to record below. The shaded green area shows the normal range. Reference ranges can differ between laboratories; follow your own lab report.',
-        bm: 'Jejaki kiraan CD4 (carta bar) dan viral load (carta garis) secara berasingan — pilih nilai yang ingin direkod di bawah. Kawasan hijau menunjukkan julat normal. Julat rujukan mungkin berbeza antara makmal; rujuk laporan makmal anda.',
+        en: 'Track your CD4 count and viral load separately — select which value you want to record below. The shaded green area shows the normal range. Tap any data point for details. Reference ranges can differ between laboratories; follow your own lab report.',
+        bm: 'Jejaki kiraan CD4 dan viral load secara berasingan — pilih nilai yang ingin direkod di bawah. Kawasan hijau menunjukkan julat normal. Ketik mana-mana titik data untuk butiran. Julat rujukan mungkin berbeza antara makmal; rujuk laporan makmal anda.',
       }}
       series={series}
     />

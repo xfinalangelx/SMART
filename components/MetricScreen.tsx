@@ -8,6 +8,7 @@ import {
   Alert,
   Platform,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { useState } from 'react';
 import { useFonts } from 'expo-font';
@@ -346,6 +347,7 @@ export default function MetricScreen({ title, description, series }: MetricScree
   const { state } = useAppData();
   const insets = useSafeAreaInsets();
   const language = state?.appData?.settings?.language === 'en' ? 'en' : 'bm';
+  const [showInfo, setShowInfo] = useState(false);
 
   const [loaded] = useFonts({
     MontserratBold: require('../assets/fonts/Montserrat-Bold.ttf'),
@@ -371,11 +373,29 @@ export default function MetricScreen({ title, description, series }: MetricScree
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <Text style={styles.title}>{title[language]}</Text>
-          <Text style={styles.description}>{description[language]}</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>{title[language]}</Text>
+            <TouchableOpacity onPress={() => setShowInfo(true)} style={styles.infoButton}>
+              <Ionicons name="help-circle-outline" size={24} color="#888" />
+            </TouchableOpacity>
+          </View>
           <MetricPanel series={series} language={language} />
         </View>
       </ScrollView>
+
+      <Modal visible={showInfo} transparent animationType="fade" onRequestClose={() => setShowInfo(false)}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setShowInfo(false)}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{title[language]}</Text>
+              <TouchableOpacity onPress={() => setShowInfo(false)}>
+                <Ionicons name="close" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.modalDescription}>{description[language]}</Text>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -402,17 +422,52 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 40,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
   title: {
     fontSize: 24,
     fontFamily: 'MontserratBold',
     color: '#333',
-    marginBottom: 8,
+    flex: 1,
   },
-  description: {
+  infoButton: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: 'MontserratBold',
+    color: '#333',
+    flex: 1,
+  },
+  modalDescription: {
     fontSize: 15,
     fontFamily: 'MontserratMedium',
     color: '#666',
-    marginBottom: 20,
     lineHeight: 22,
   },
   tabsRow: {
