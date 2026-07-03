@@ -1,5 +1,60 @@
-const bmMedicine = {
+const medicine = {
   nrti: [
+    {
+      name: "Lamivudine 150mg",
+      brand: "Valfix / Lamivox",
+      commonDose:
+        "DUA (2) tablet SEKALI setiap hari atau SATU (1) tablet DUA KALI setiap hari",
+      beforeAfter: "Sebelum / selepas makan",
+      dayNight: "Dua-dua pun boleh",
+      adjustmentRenal: "CrCl ≥50 mL/minute: \nTiada pelarasan dos diperlukan",
+      adjustmentLiverMild: "Tiada pelarasan dos diperlukan",
+      adjustmentLiverModerate: "Tiada pelarasan dos diperlukan",
+      adjustmentLiverSevere: "Tiada pelarasan dos diperlukan",
+      crushed: "Ya",
+      crushInstruction:
+        "Campurkan dengan larutan separa pejal / cecair dan diambil segera",
+      pregancy: "Ya",
+      sideEffects:
+        "Sakit kepala, keletihan, kekurangan tenaga, rasa loya / muntah\n\nPenurunan selera makan, cirit-birit, ruam dan sakit perut. Peningkatan bacaan enzim hati\n\nDemam (suhu tinggi), berasa tidak sihat, sakit otot dan ketidakselesaan, sakit sendi, sukar tidur (insomnia), batuk, hidung berair, keguguran rambut (alopecia).",
+      monitoring: "Ujian enzim hati\nUjian enzim otot",
+      population: "Tiada",
+      takenMed: "Tiada",
+      notTakenMed: "Emtricitabine\nCotrimoxazole (dos tinggi)\nCladribine",
+      interaction: "Orlistat \nTrimethoprim",
+      image: require("../assets/img/atazor.png"),
+      category: 3,
+      id: 8,
+    },
+    {
+      name: "Abacavir 300mg",
+      brand: "Ziagen",
+      commonDose:
+        "DUA (2) tablet SEKALI setiap hari atau SATU (1) tablet DUA KALI setiap hari",
+      beforeAfter: "Sebelum / selepas makan",
+      dayNight: "Dua-dua pun boleh",
+      adjustmentRenal: "Tiada pelarasan dos diperlukan",
+      adjustmentLiverMild: "Penyelarasan dos diperlukan",
+      adjustmentLiverModerate: "Tidak digalakkan",
+      adjustmentLiverSevere: "Tidak digalakkan",
+      crushed: "Ya",
+      crushInstruction:
+        "Campurkan dengan separa pejal / cecair dan diambil segera",
+      pregancy: "Ya\n(Jika HLA-B5701 adalah negative)",
+      sideEffects:
+        "Rasa tidak sihat (loya / muntah), sakit kepala, cirit-birit, hilang selera makan, sakit perut \n\nLetih, kekurangan tenaga, demam, ruam, sesak nafas, sakit tekak, batuk",
+      monitoring: "Status HLA-B * 5701",
+      population: "Tiada",
+      takenMed: "Tiada",
+      notTakenMed:
+        "Emtricitabine\nLamivudine\nTrimethoprim/sulfamethoxazole (dos tinggi)\nCladribine",
+      interaction: "Phenytoin\nMetadon",
+      image: require("../assets/img/ziagen.png"),
+      category: 3,
+      id: 9,
+    },
+  ],
+  nnrti: [
     {
       name: "Efavirenz 600mg",
       brand: "Efavir",
@@ -146,7 +201,6 @@ const bmMedicine = {
       category: 2,
       id: 4,
     },
-
     {
       name: "Darunavir 600mg",
       brand: "Prezista",
@@ -174,171 +228,6 @@ const bmMedicine = {
       image: require("../assets/img/atazor.png"),
       category: 2,
       id: 5,
-    },
-  ],
-  nnrti: [
-    {
-      name: "Emtricitabine 200mg / Tenofovir 300mg",
-      brand: "Tenof-EM / Truvada",
-      commonDose: "SATU (1) tablet SEKALI setiap hari",
-      beforeAfter: "Selepas makan",
-      dayNight: "Dua-dua pun boleh",
-      adjustmentRenal: "CrCl ≤50 mL / minit: Pelarasan dos diperlukan",
-      adjustmentLiverMild: "Tiada pelarasan dos diperlukan",
-      adjustmentLiverModerate: "Tiada pelarasan dos diperlukan",
-      adjustmentLiverSevere: "Tiada pelarasan dos diperlukan",
-      crushed: "Ya",
-      crushInstruction:
-        "Hancurkan dalam 100ml air / jus oren dan diambil segera",
-      pregancy: "Ya",
-      sideEffects:
-        "Cirit-birit, kembung perut, sakit perut, rasa loya / muntah\n\n Pening, sakit kepala\n\nRuam, kelesuan, sakit\n\nKesukaran tidur (insomia), mimpi yang aneh\n\nKulit menjadi gelap \n\nReaksi alahan atau alergi, seperti nafas berbunyi (wheezing), bengkak pada muka atau salur pernafasan atau berasa pening (pengsan).",
-      monitoring:
-        "Ujian kepadatan tulang (BMD)\nUjian enzim hati \nUjian fungsi buah pinggang\nUjian virus Hepatitis B (sebelum memulakan rawatan)",
-      population: "Tiada",
-      takenMed: "Tiada",
-      notTakenMed: "Tenofovir alafenamide\nLamivudine\nAdefovir dipivoxil",
-      interaction:
-        "Aminoglycosides\nAmphotericin B\nFoscarnet Ganciclovir\nPentamidine\nVancomycin Interleukin-2 \nNon-steroidal anti-inflammatory drugs (cth: Celecoxib, Etoricoxib)",
-      image: require("../assets/img/tenof.png"),
-      category: 3,
-      id: 6,
-    },
-    {
-      name: "Lamivudine 150mg / Zidovudine 300mg",
-      brand: "Lamizido / Combivir",
-      commonDose: "SATU (1) tablet DUA KALI setiap hari",
-      beforeAfter: "Sebelum / selepas makan",
-      dayNight: "Dua-dua pun boleh",
-      adjustmentRenal: "CrCl <50 mL / minit: Tidak digalakkan",
-      adjustmentLiverMild: "Tidak digalakkan",
-      adjustmentLiverModerate: "Tidak digalakkan",
-      adjustmentLiverSevere: "Tidak digalakkan",
-      crushed: "Ya",
-      crushInstruction:
-        "Campurkan dengan larutan separa pejal / cecair (lebih kurang 15 minit) dan diambil segera",
-      pregancy: "Ya",
-      sideEffects:
-        "Loya, sakit kepala, muntah, keletihan, pening, lemah, sakit otot, demam \n\nCirit-birit, sakit perut, hilang selera makan \n\n Keletihan, sukar tidur (insomnia), sakit sendi atau otot, batuk, hidung berair, rambut gugur, ruam, perubahan dalam lemak badan,jumlah sel darah merah dan / atau darah putih rendah, peningkatan bacaan enzim hati.",
-      monitoring:
-        "Ujian kepadatan tulang (BMD)\nKiraan sel darah\nTanda perubahan lemak badan (lipoatrofi)\nUjian enzim otot (tanda-tanda kelemahan/ sakit otot)\nUjian fungsi buah pinggang",
-      population: "Tiada",
-      takenMed: "Tiada",
-      notTakenMed:
-        "Clabribine\nCotrimoxazole (dose tinggi)\nEmtricitabine\nGanciclovir\nLamivudine\nRibavirin.",
-      interaction:
-        "Antibiotik\nAnti-malaria \nUbat- ubatan gout\nUbat-ubatan kemoterapi\nUbat-ubatan sawan (epilepsi)\nMetadon",
-      image: require("../assets/img/atazor.png"),
-      category: 3,
-      id: 7,
-    },
-    {
-      name: "Lamivudine 150mg",
-      brand: "Valfix / Lamivox",
-      commonDose:
-        "DUA (2) tablet SEKALI setiap hari atau SATU (1) tablet DUA KALI setiap hari",
-      beforeAfter: "Sebelum / selepas makan",
-      dayNight: "Dua-dua pun boleh",
-      adjustmentRenal: "CrCl ≥50 mL/minute: \nTiada pelarasan dos diperlukan",
-      adjustmentLiverMild: "Tiada pelarasan dos diperlukan",
-      adjustmentLiverModerate: "Tiada pelarasan dos diperlukan",
-      adjustmentLiverSevere: "Tiada pelarasan dos diperlukan",
-      crushed: "Ya",
-      crushInstruction:
-        "Campurkan dengan larutan separa pejal / cecair dan diambil segera",
-      pregancy: "Ya",
-      sideEffects:
-        "Sakit kepala, keletihan, kekurangan tenaga, rasa loya / muntah\n\nPenurunan selera makan, cirit-birit, ruam dan sakit perut. Peningkatan bacaan enzim hati\n\nDemam (suhu tinggi), berasa tidak sihat, sakit otot dan ketidakselesaan, sakit sendi, sukar tidur (insomnia), batuk, hidung berair, keguguran rambut (alopecia).",
-      monitoring: "Ujian enzim hati\nUjian enzim otot",
-      population: "Tiada",
-      takenMed: "Tiada",
-      notTakenMed: "Emtricitabine\nCotrimoxazole (dos tinggi)\nCladribine",
-      interaction: "Orlistat \nTrimethoprim",
-      image: require("../assets/img/atazor.png"),
-      category: 3,
-      id: 8,
-    },
-    {
-      name: "Abacavir 300mg",
-      brand: "Ziagen",
-      commonDose:
-        "DUA (2) tablet SEKALI setiap hari atau SATU (1) tablet DUA KALI setiap hari",
-      beforeAfter: "Sebelum / selepas makan",
-      dayNight: "Dua-dua pun boleh",
-      adjustmentRenal: "Tiada pelarasan dos diperlukan",
-      adjustmentLiverMild: "Penyelarasan dos diperlukan",
-      adjustmentLiverModerate: "Tidak digalakkan",
-      adjustmentLiverSevere: "Tidak digalakkan",
-      crushed: "Ya",
-      crushInstruction:
-        "Campurkan dengan separa pejal / cecair dan diambil segera",
-      pregancy: "Ya\n(Jika HLA-B5701 adalah negative)",
-      sideEffects:
-        "Rasa tidak sihat (loya / muntah), sakit kepala, cirit-birit, hilang selera makan, sakit perut \n\nLetih, kekurangan tenaga, demam, ruam, sesak nafas, sakit tekak, batuk",
-      monitoring: "Status HLA-B * 5701",
-      population: "Tiada",
-      takenMed: "Tiada",
-      notTakenMed:
-        "Emtricitabine\nLamivudine\nTrimethoprim/sulfamethoxazole (dos tinggi)\nCladribine",
-      interaction: "Phenytoin\nMetadon",
-      image: require("../assets/img/ziagen.png"),
-      category: 3,
-      id: 9,
-    },
-    {
-      name: "Abacavir 600mg / Lamivudine 300mg",
-      brand: "Kivexa",
-      commonDose: "SATU (1) tablet SEKALI setiap hari",
-      beforeAfter: "Sebelum / selepas makan",
-      dayNight: "Dua-dua pun boleh",
-      adjustmentRenal: "CrCl <50 mL / minit: Tidak digalakkan",
-      adjustmentLiverMild: "Tidak digalakkan",
-      adjustmentLiverModerate: "Tidak digalakkan",
-      adjustmentLiverSevere: "Tidak digalakkan",
-      crushed: "Tidak",
-      crushInstruction: "Tiada",
-      pregancy: "Tidak",
-      sideEffects:
-        "Reaksi hipersensitiviti, batuk, hidung berair, ruam, sakit tekak\n\nSakit kepala, demam, berasa tidak sihat, sukar tidur\n\nCirit-birit, berasa loya / muntah, sakit perut, hilang selera makan \n\nKeletihan, kekurangan tenaga, sakit otot & sendi dan ketidakselesaan, keguguran rambut (alopecia), sesak nafas",
-      monitoring:
-        "Status HLA-B * 5701\nParas gula\nUjian enzim hati \nUjian profil renal",
-      population: "Tiada",
-      takenMed: "Tiada",
-      notTakenMed:
-        "Emtricitabine\nLamivudine\nTrimethoprim/sulfamethoxazole (dos tinggi)\nCladribine",
-      interaction: "Phenytoin\nMetadon",
-      image: require("../assets/img/kivexa.png"),
-      category: 3,
-      id: 10,
-    },
-  ],
-  nnnrti: [
-    {
-      name: "Tenofovir 300mg / Emtricitabine 200mg / Efavirenz 600mg",
-      brand: "Viraday",
-      commonDose: "SATU (1) tablet SEKALI setiap hari",
-      beforeAfter: "Sebelum makan",
-      dayNight: "Malam",
-      adjustmentRenal: "CrCl <50 mL / minit: \nTidak digalakkan",
-      adjustmentLiverMild: "Tiada pelarasan dos diperlukan",
-      adjustmentLiverModerate: "Tidak digalakkan",
-      adjustmentLiverSevere: "Tidak digalakkan",
-      crushed: "Tidak",
-      crushInstruction: "Tiada",
-      pregancy:
-        "Untuk meneruskan rawatan. Bukan untuk pesakit yang baru didiagnosis.",
-      sideEffects:
-        "Pening, sakit kepala, sukar tidur (insomia), mimpi yang aneh, sukar menumpukan perhatian, mengantuk, lemah. \n\nRasa loya / muntah, cirit-birit, sakit perut, rasa kembung perut, kembung.\n\nRuam kulit, reaksi alergi, tompok kulit gelap (sering bermula pada tangan atau tapak kaki).\n \nPemikiran bunuh diri, kegelisahan, kemurungan, paranoia dan perubahan emosi",
-      monitoring:
-        "Ujian enzim hati\nUjian profil lemak\nUjian profil renal\n\nUjian virus Hepatitis B (2 minggu selepas memulakan rawatan)",
-      population: "Tiada",
-      takenMed: "Tiada",
-      notTakenMed: "St Johns Wort\nGinkgo biloba ",
-      interaction:
-        "Antibiotik\nAntiepileptik\nAntikoagulan\nAntidepresan\nKontraseptif hormon\nMetadon\nUbat untuk tekanan darah tinggi\nUbat untuk menurunkan kolesterol (cth. atorvastatin, simvastatin)\n\nSt Johns Wort\nGinkgo biloba\n",
-      image: require("../assets/img/viraday.png"),
-      category: 4,
-      id: 11,
     },
   ],
   ii: [
@@ -395,37 +284,117 @@ const bmMedicine = {
       category: 5,
       id: 13,
     },
+  ],
+  combination: [
     {
-      name: "Darunavir 600mg",
-      brand: "Prezista",
-      commonDose: "SATU (1) tablet DUA KALI setiap hari",
-      beforeAfter:
-        "Selepas makan(Ambil tablet dengan makanan atau snek ringan  untuk membantu penyerapan ubat)",
+      name: "Emtricitabine 200mg / Tenofovir 300mg",
+      brand: "Tenof-EM / Truvada",
+      commonDose: "SATU (1) tablet SEKALI setiap hari",
+      beforeAfter: "Selepas makan",
       dayNight: "Dua-dua pun boleh",
-      adjustmentRenal: "Tiada pelarasan dos diperlukan",
+      adjustmentRenal: "CrCl ≤50 mL / minit: Pelarasan dos diperlukan",
       adjustmentLiverMild: "Tiada pelarasan dos diperlukan",
       adjustmentLiverModerate: "Tiada pelarasan dos diperlukan",
-      adjustmentLiverSevere: "Tidak Digalakkan",
+      adjustmentLiverSevere: "Tiada pelarasan dos diperlukan",
       crushed: "Ya",
       crushInstruction:
-        "Campurkan dengan separa pejal / cecair dan diambil segera",
+        "Hancurkan dalam 100ml air / jus oren dan diambil segera",
       pregancy: "Ya",
       sideEffects:
-        "Cirit-birit, loya, muntah, sakit perut, senak, kembung perut, kembung.\nSakit kepala, letih, pening, mengantuk, kebas, neuropati periferal (kesemutan atau sakit di tangan / kaki), kesukaran untuk tidur (insomia), kelemahan.\nRuam, gatal, kencing manis, paras lemak yang meningkat, enzim hati yang meningkat \nLipodistrofi (perubahan dalam lemak badan), demam",
-      monitoring: "Paras gula\nUjian enzim hati",
-      population: "CD4> 200 sel / mm3",
-      takenMed: "Ritonavir: SATU (1) tablet (100mg) dua kali sehari ",
-      notTakenMed:
-        "Alfuzosin\nAmiodarone\nColchicine\nErgotamine\nLopinavir/ritonavir (Kaletra)\nMetformin\nMidazolam\nQuetiapine\nRanolazine\nRifampacin\nSildenafil\nSimvastatin\nTicagrelor",
+        "Cirit-birit, kembung perut, sakit perut, rasa loya / muntah\n\n Pening, sakit kepala\n\nRuam, kelesuan, sakit\n\nKesukaran tidur (insomia), mimpi yang aneh\n\nKulit menjadi gelap \n\nReaksi alahan atau alergi, seperti nafas berbunyi (wheezing), bengkak pada muka atau salur pernafasan atau berasa pening (pengsan).",
+      monitoring:
+        "Ujian kepadatan tulang (BMD)\nUjian enzim hati \nUjian fungsi buah pinggang\nUjian virus Hepatitis B (sebelum memulakan rawatan)",
+      population: "Tiada",
+      takenMed: "Tiada",
+      notTakenMed: "Tenofovir alafenamide\nLamivudine\nAdefovir dipivoxil",
       interaction:
-        "Antibiotik\nSteroid\nKontraseptif hormon\nMetformin\nMetadon\nUbat untuk menurunkan kolesterol (cth. atorvastatin, simvastatin)",
-      doseInstrcution: "",
-      crushInstructionLink: "",
-      image: require("../assets/img/isentress.png"),
-      category: 5,
-      id: 14,
+        "Aminoglycosides\nAmphotericin B\nFoscarnet Ganciclovir\nPentamidine\nVancomycin Interleukin-2 \nNon-steroidal anti-inflammatory drugs (cth: Celecoxib, Etoricoxib)",
+      image: require("../assets/img/tenof.png"),
+      category: 3,
+      id: 6,
+    },
+    {
+      name: "Lamivudine 150mg / Zidovudine 300mg",
+      brand: "Lamizido / Combivir",
+      commonDose: "SATU (1) tablet DUA KALI setiap hari",
+      beforeAfter: "Sebelum / selepas makan",
+      dayNight: "Dua-dua pun boleh",
+      adjustmentRenal: "CrCl <50 mL / minit: Tidak digalakkan",
+      adjustmentLiverMild: "Tidak digalakkan",
+      adjustmentLiverModerate: "Tidak digalakkan",
+      adjustmentLiverSevere: "Tidak digalakkan",
+      crushed: "Ya",
+      crushInstruction:
+        "Campurkan dengan larutan separa pejal / cecair (lebih kurang 15 minit) dan diambil segera",
+      pregancy: "Ya",
+      sideEffects:
+        "Loya, sakit kepala, muntah, keletihan, pening, lemah, sakit otot, demam \n\nCirit-birit, sakit perut, hilang selera makan \n\n Keletihan, sukar tidur (insomnia), sakit sendi atau otot, batuk, hidung berair, rambut gugur, ruam, perubahan dalam lemak badan,jumlah sel darah merah dan / atau darah putih rendah, peningkatan bacaan enzim hati.",
+      monitoring:
+        "Ujian kepadatan tulang (BMD)\nKiraan sel darah\nTanda perubahan lemak badan (lipoatrofi)\nUjian enzim otot (tanda-tanda kelemahan/ sakit otot)\nUjian fungsi buah pinggang",
+      population: "Tiada",
+      takenMed: "Tiada",
+      notTakenMed:
+        "Clabribine\nCotrimoxazole (dose tinggi)\nEmtricitabine\nGanciclovir\nLamivudine\nRibavirin.",
+      interaction:
+        "Antibiotik\nAnti-malaria \nUbat- ubatan gout\nUbat-ubatan kemoterapi\nUbat-ubatan sawan (epilepsi)\nMetadon",
+      image: require("../assets/img/atazor.png"),
+      category: 3,
+      id: 7,
+    },
+    {
+      name: "Abacavir 600mg / Lamivudine 300mg",
+      brand: "Kivexa",
+      commonDose: "SATU (1) tablet SEKALI setiap hari",
+      beforeAfter: "Sebelum / selepas makan",
+      dayNight: "Dua-dua pun boleh",
+      adjustmentRenal: "CrCl <50 mL / minit: Tidak digalakkan",
+      adjustmentLiverMild: "Tidak digalakkan",
+      adjustmentLiverModerate: "Tidak digalakkan",
+      adjustmentLiverSevere: "Tidak digalakkan",
+      crushed: "Tidak",
+      crushInstruction: "Tiada",
+      pregancy: "Tidak",
+      sideEffects:
+        "Reaksi hipersensitiviti, batuk, hidung berair, ruam, sakit tekak\n\nSakit kepala, demam, berasa tidak sihat, sukar tidur\n\nCirit-birit, berasa loya / muntah, sakit perut, hilang selera makan \n\nKeletihan, kekurangan tenaga, sakit otot & sendi dan ketidakselesaan, keguguran rambut (alopecia), sesak nafas",
+      monitoring:
+        "Status HLA-B * 5701\nParas gula\nUjian enzim hati \nUjian profil renal",
+      population: "Tiada",
+      takenMed: "Tiada",
+      notTakenMed:
+        "Emtricitabine\nLamivudine\nTrimethoprim/sulfamethoxazole (dos tinggi)\nCladribine",
+      interaction: "Phenytoin\nMetadon",
+      image: require("../assets/img/kivexa.png"),
+      category: 3,
+      id: 10,
+    },
+    {
+      name: "Tenofovir 300mg / Emtricitabine 200mg / Efavirenz 600mg",
+      brand: "Viraday",
+      commonDose: "SATU (1) tablet SEKALI setiap hari",
+      beforeAfter: "Sebelum makan",
+      dayNight: "Malam",
+      adjustmentRenal: "CrCl <50 mL / minit: \nTidak digalakkan",
+      adjustmentLiverMild: "Tiada pelarasan dos diperlukan",
+      adjustmentLiverModerate: "Tidak digalakkan",
+      adjustmentLiverSevere: "Tidak digalakkan",
+      crushed: "Tidak",
+      crushInstruction: "Tiada",
+      pregancy:
+        "Untuk meneruskan rawatan. Bukan untuk pesakit yang baru didiagnosis.",
+      sideEffects:
+        "Pening, sakit kepala, sukar tidur (insomia), mimpi yang aneh, sukar menumpukan perhatian, mengantuk, lemah. \n\nRasa loya / muntah, cirit-birit, sakit perut, rasa kembung perut, kembung.\n\nRuam kulit, reaksi alergi, tompok kulit gelap (sering bermula pada tangan atau tapak kaki).\n \nPemikiran bunuh diri, kegelisahan, kemurungan, paranoia dan perubahan emosi",
+      monitoring:
+        "Ujian enzim hati\nUjian profil lemak\nUjian profil renal\n\nUjian virus Hepatitis B (2 minggu selepas memulakan rawatan)",
+      population: "Tiada",
+      takenMed: "Tiada",
+      notTakenMed: "St Johns Wort\nGinkgo biloba ",
+      interaction:
+        "Antibiotik\nAntiepileptik\nAntikoagulan\nAntidepresan\nKontraseptif hormon\nMetadon\nUbat untuk tekanan darah tinggi\nUbat untuk menurunkan kolesterol (cth. atorvastatin, simvastatin)\n\nSt Johns Wort\nGinkgo biloba\n",
+      image: require("../assets/img/viraday.png"),
+      category: 4,
+      id: 11,
     },
   ],
 };
 
-export default bmMedicine;
+export default medicine;

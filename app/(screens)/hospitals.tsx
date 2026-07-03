@@ -7,7 +7,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { router } from 'expo-router';
 import { useAppData } from '@/contexts/AppDataContext';
 import { useFonts } from 'expo-font';
@@ -15,12 +15,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '@/lib/supabase';
 import * as Clipboard from 'expo-clipboard';
+import FilterChips, { FilterOption } from '@/components/FilterChips';
+import { inferState, MALAYSIA_STATES } from '@/utils/directory';
 
 type HospitalItem = {
   id: string;
   name: string;
   address: string;
   phone: string;
+  state?: string;
+  area?: string;
 };
 
 export default function HospitalsScreen() {
@@ -28,6 +32,7 @@ export default function HospitalsScreen() {
   const [language, setLanguage] = useState<'en' | 'bm'>('bm');
   const [hospitals, setHospitals] = useState<HospitalItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stateFilter, setStateFilter] = useState('all');
   const insets = useSafeAreaInsets();
 
   const [loaded] = useFonts({
@@ -77,10 +82,29 @@ export default function HospitalsScreen() {
     );
   };
 
+  const availableStates = useMemo(() => {
+    const present = new Set<string>();
+    hospitals.forEach((hospital) => {
+      const inferred = inferState(hospital);
+      if (inferred) present.add(inferred);
+    });
+    return MALAYSIA_STATES.filter((s) => present.has(s));
+  }, [hospitals]);
+
+  const stateOptions: FilterOption[] = [
+    { key: 'all', label: language === 'bm' ? 'Semua Negeri' : 'All States' },
+    ...availableStates.map((s) => ({ key: s, label: s })),
+  ];
+
+  const filteredHospitals = useMemo(() => {
+    if (stateFilter === 'all') return hospitals;
+    return hospitals.filter((hospital) => inferState(hospital) === stateFilter);
+  }, [hospitals, stateFilter]);
+
   if (!loaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8F00FF" />
+        <ActivityIndicator size="large" color="#3498DB" />
       </View>
     );
   }
@@ -99,7 +123,7 @@ export default function HospitalsScreen() {
             onPress={() => copyToClipboard(item.address, 'address')}
             style={styles.copyButton}
           >
-            <Ionicons name="copy-outline" size={20} color="#8F00FF" />
+            <Ionicons name="copy-outline" size={20} color="#3498DB" />
           </TouchableOpacity>
         </View>
       </View>
@@ -114,7 +138,7 @@ export default function HospitalsScreen() {
             onPress={() => copyToClipboard(item.phone, 'phone')}
             style={styles.copyButton}
           >
-            <Ionicons name="copy-outline" size={20} color="#8F00FF" />
+            <Ionicons name="copy-outline" size={20} color="#3498DB" />
           </TouchableOpacity>
         </View>
       </View>
@@ -135,19 +159,36 @@ export default function HospitalsScreen() {
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#8F00FF" />
+          <ActivityIndicator size="large" color="#3498DB" />
           <Text style={styles.loadingText}>
             {language === 'bm' ? 'Memuatkan...' : 'Loading...'}
           </Text>
         </View>
       ) : (
-        <FlatList
-          data={hospitals}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
+        <>
+          {stateOptions.length > 1 && (
+            <FilterChips
+              options={stateOptions}
+              selected={stateFilter}
+              onSelect={setStateFilter}
+              activeColor="#3498DB"
+            />
+          )}
+          <FlatList
+            data={filteredHospitals}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <Text style={styles.loadingText}>
+                {language === 'bm'
+                  ? 'Tiada hospital ditemui untuk negeri ini.'
+                  : 'No hospitals found for this state.'}
+              </Text>
+            }
+          />
+        </>
       )}
     </View>
   );

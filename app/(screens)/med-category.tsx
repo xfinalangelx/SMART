@@ -19,6 +19,7 @@ type MedicineItem = {
   id: number;
   name: string;
   brand: string;
+  image?: any;
 };
 
 export default function MedCategoryScreen() {
@@ -48,7 +49,9 @@ export default function MedCategoryScreen() {
     );
   }
 
-  const data = getMedicineData(filter, language);
+  const data = [...getMedicineData(filter, language)].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
 
   const renderItem = ({ item }: { item: MedicineItem }) => (
     <TouchableOpacity
@@ -56,7 +59,11 @@ export default function MedCategoryScreen() {
       onPress={() => router.push(`/(screens)/medicine-detail?filter=${item.id}&name=${name}&category=${filter}` as any)}
       style={styles.card}
     >
-      <Image source={require('../../assets/img/medicineIcon.png')} style={styles.cardIcon} />
+      <Image
+        source={item.image || require('../../assets/img/medicineIcon.png')}
+        style={styles.cardIcon}
+        resizeMode="contain"
+      />
       <View style={styles.cardText}>
         <Text style={styles.cardTitle}>{item.name}</Text>
         <Text style={styles.cardSubtitle}>{item.brand}</Text>

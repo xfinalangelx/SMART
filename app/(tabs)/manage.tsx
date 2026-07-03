@@ -2,12 +2,12 @@ import ModuleHub from '@/components/ModuleHub';
 import ManageOverview from '@/components/ManageOverview';
 import { useAppData } from '@/contexts/AppDataContext';
 
-export default function ChecklistScreen() {
+export default function ManageTab() {
   const { state } = useAppData();
   const language = state?.appData?.settings?.language === 'en' ? 'en' : 'bm';
 
   return (
-    <ModuleHub moduleKey="manage" showBack>
+    <ModuleHub moduleKey="manage">
       <ManageOverview language={language} />
     </ModuleHub>
   );

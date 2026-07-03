@@ -8,6 +8,65 @@ import { Platform } from 'react-native';
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
+/**
+ * SMART framework palette (see SMART infographic):
+ * Learn (Pembelajaran) teal, Manage (Pengurusan) purple,
+ * Track (Pemantauan) blue, Connect (Sokongan) orange.
+ */
+export const SmartColors = {
+  learn: '#16B394',
+  manage: '#7B61FF',
+  track: '#3498DB',
+  connect: '#F39C12',
+  accent: '#FF6B6B',
+  text: '#232323',
+  textMuted: '#666666',
+  background: '#FFFFFF',
+  card: '#FFFFFF',
+  border: '#00000012',
+  success: '#4CAF50',
+  danger: '#FF3B30',
+  normalBand: 'rgba(76, 175, 80, 0.16)',
+  normalBandLine: 'rgba(76, 175, 80, 0.65)',
+};
+
+export type SmartModuleKey = 'learn' | 'manage' | 'track' | 'connect';
+
+/** Bilingual names of the four SMART modules. */
+export const SmartModules: Record<
+  SmartModuleKey,
+  { en: string; bm: string; color: string; taglineEn: string; taglineBm: string }
+> = {
+  learn: {
+    en: 'Learn',
+    bm: 'Pembelajaran',
+    color: SmartColors.learn,
+    taglineEn: 'Build knowledge and understand your treatment.',
+    taglineBm: 'Bina pengetahuan dan fahami rawatan anda.',
+  },
+  manage: {
+    en: 'Manage',
+    bm: 'Pengurusan',
+    color: SmartColors.manage,
+    taglineEn: 'Plan your care, stay organised and take charge of your health.',
+    taglineBm: 'Rancang penjagaan anda dan uruskan kesihatan anda.',
+  },
+  track: {
+    en: 'Track',
+    bm: 'Pemantauan',
+    color: SmartColors.track,
+    taglineEn: 'Record your results and see your health trends over time.',
+    taglineBm: 'Rekod keputusan anda dan lihat trend kesihatan anda.',
+  },
+  connect: {
+    en: 'Connect',
+    bm: 'Sokongan',
+    color: SmartColors.connect,
+    taglineEn: 'Find support, resources and people who care for you.',
+    taglineBm: 'Cari sokongan, sumber dan komuniti yang menyayangi anda.',
+  },
+};
+
 export const Colors = {
   light: {
     text: '#11181C',

@@ -7,7 +7,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { router } from 'expo-router';
 import { useAppData } from '@/contexts/AppDataContext';
 import { useFonts } from 'expo-font';
@@ -15,12 +15,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '@/lib/supabase';
 import * as Clipboard from 'expo-clipboard';
+import FilterChips, { FilterOption } from '@/components/FilterChips';
+import { inferState, MALAYSIA_STATES } from '@/utils/directory';
 
 type ClinicItem = {
   id: string;
   name: string;
   address: string;
   phone: string;
+  state?: string;
+  area?: string;
 };
 
 export default function ClinicsScreen() {
@@ -28,6 +32,7 @@ export default function ClinicsScreen() {
   const [language, setLanguage] = useState<'en' | 'bm'>('bm');
   const [clinics, setClinics] = useState<ClinicItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stateFilter, setStateFilter] = useState('all');
   const insets = useSafeAreaInsets();
 
   const [loaded] = useFonts({
@@ -77,10 +82,29 @@ export default function ClinicsScreen() {
     );
   };
 
+  const availableStates = useMemo(() => {
+    const present = new Set<string>();
+    clinics.forEach((clinic) => {
+      const inferred = inferState(clinic);
+      if (inferred) present.add(inferred);
+    });
+    return MALAYSIA_STATES.filter((s) => present.has(s));
+  }, [clinics]);
+
+  const stateOptions: FilterOption[] = [
+    { key: 'all', label: language === 'bm' ? 'Semua Negeri' : 'All States' },
+    ...availableStates.map((s) => ({ key: s, label: s })),
+  ];
+
+  const filteredClinics = useMemo(() => {
+    if (stateFilter === 'all') return clinics;
+    return clinics.filter((clinic) => inferState(clinic) === stateFilter);
+  }, [clinics, stateFilter]);
+
   if (!loaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8F00FF" />
+        <ActivityIndicator size="large" color="#E91E63" />
       </View>
     );
   }
@@ -141,13 +165,30 @@ export default function ClinicsScreen() {
           </Text>
         </View>
       ) : (
-        <FlatList
-          data={clinics}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
+        <>
+          {stateOptions.length > 1 && (
+            <FilterChips
+              options={stateOptions}
+              selected={stateFilter}
+              onSelect={setStateFilter}
+              activeColor="#E91E63"
+            />
+          )}
+          <FlatList
+            data={filteredClinics}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <Text style={styles.loadingText}>
+                {language === 'bm'
+                  ? 'Tiada klinik ditemui untuk negeri ini.'
+                  : 'No clinics found for this state.'}
+              </Text>
+            }
+          />
+        </>
       )}
     </View>
   );

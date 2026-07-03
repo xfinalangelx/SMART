@@ -1,4 +1,6 @@
-const initQuestions = [
+import { TriviaQuestion } from './questions';
+
+const initQuestions: TriviaQuestion[] = [
   {
     id: 1,
     question: "Ubat-ubatan herba dapat digunakan untuk mengubati HIV.",
@@ -23,7 +25,7 @@ const initQuestions = [
     options: ["Mitos", "Fakta"],
     answer: "Mitos",
     explanation:
-      "Peluh, air mata, air kencing atau najis seseorang yang menghidap HIV HIV tidak boleh disebarkan melalui peluh, air mata, air kencing atau najis orang yang dijangkiti HIV. ",
+      "HIV tidak terdapat dalam peluh, air mata, air kencing atau najis dalam jumlah yang boleh menjangkiti orang lain. HIV hanya boleh ditularkan melalui cecair badan tertentu — darah, air mani, cecair faraj dan rektum, serta susu ibu — jadi anda tidak boleh dijangkiti HIV melalui cecair badan yang lain ini.",
   },
   {
     id: 4,
@@ -71,11 +73,11 @@ const initQuestions = [
   {
     id: 9,
     question:
-      "Saya positif HIV dan begitu juga pasangan saya jadi kami tidak perlu risau tentang HIV",
+      "Anda tidak boleh dijangkiti HIV daripada berkongsi tempat duduk tandas, meja, tombol pintu, kutleri atau tuala",
     options: ["Mitos", "Fakta"],
-    answer: "Mitos",
+    answer: "Fakta",
     explanation:
-      "Terdapat banyak jenis strain virus HIV. Jika anda dan pasangan anda hidup dengan HIV, anda mungkin mempunyai strain HIV yang berbeza dan oleh itu, anda masih perlu melindungi satu sama lain daripada jangkitan HIV. Jika anda dijangkiti dua atau lebih jenis strain HIV ia boleh menjejaskan keberkesanaan rawatan anda. Jika anda sedang menjalani rawatan yang berkesan dan pakar perubatan telah mengesahkan viral load anda tidak dapat dikesan, anda tidak akan menularkan HIV melalui hubungan seks.",
+      "Anda tidak boleh dijangkiti HIV daripada tempat duduk tandas, meja, tombol pintu, kutleri atau berkongsi tuala. HIV hanya boleh ditularkan melalui cecair badan tertentu, jadi barangan harian ini tidak boleh menyebarkan HIV.",
   },
   {
     id: 10,
@@ -136,26 +138,96 @@ const initQuestions = [
     explanation:
       "Risiko HIV daripada seks oral adalah sangat kecil melainkan anda atau pasangan anda mempunyai luka terbuka yang besar pada bahagian kemaluan atau gusi yang luka atau berdarah di dalam mulut anda.",
   },
+  {
+    id: 17,
+    question: "Mengambil ubat HIV (ART) setiap hari seperti yang dipreskrib adalah penting",
+    options: ["Mitos", "Fakta"],
+    answer: "Fakta",
+    explanation:
+      "Mengambil terapi antiretroviral (ART) tepat seperti yang dipreskrib, setiap hari, mengekalkan jumlah virus dalam badan anda pada tahap rendah dan melindungi sistem imun anda. Terlepas dos boleh membenarkan virus membiak dan menjadi rintang kepada ubat, yang menyukarkan rawatan. Kepatuhan yang baik adalah perkara paling penting yang anda boleh lakukan untuk kekal sihat.",
+  },
+  {
+    id: 18,
+    question: "Seseorang yang hidup dengan HIV yang menjalani rawatan berkesan boleh hidup panjang dan sihat",
+    options: ["Mitos", "Fakta"],
+    answer: "Fakta",
+    explanation:
+      "Dengan rawatan antiretroviral yang berkesan, individu yang hidup dengan HIV boleh menjangkakan jangka hayat yang hampir normal. Rawatan moden mengawal virus, melindungi sistem imun, dan membolehkan seseorang bekerja, menjalin hubungan dan berkeluarga, serta menjalani kehidupan yang penuh.",
+  },
+  {
+    id: 19,
+    question: "Ibu yang hidup dengan HIV pasti akan menularkan HIV kepada bayinya",
+    options: ["Mitos", "Fakta"],
+    answer: "Mitos",
+    explanation:
+      "Dengan penjagaan yang betul, risiko penularan HIV daripada ibu kepada bayi boleh dikurangkan kepada kurang daripada 1%. Ini termasuk mengambil rawatan antiretroviral semasa mengandung, penjagaan bersalin yang sesuai, ubat untuk bayi selepas lahir, dan mengikut nasihat perubatan mengenai pemberian susu. Bincang dengan penyedia penjagaan kesihatan anda tentang merancang kehamilan.",
+  },
+  {
+    id: 20,
+    question: "PrEP (profilaksis pra-pendedahan) boleh membantu individu HIV-negatif mengelak jangkitan HIV",
+    options: ["Mitos", "Fakta"],
+    answer: "Fakta",
+    explanation:
+      "PrEP ialah ubat yang diambil oleh individu HIV-negatif untuk mengurangkan risiko dijangkiti HIV dengan ketara. Apabila diambil seperti yang dipreskrib, ia sangat berkesan. PrEP tidak melindungi daripada jangkitan seksual yang lain, jadi kondom masih disyorkan. Berbincang dengan penyedia penjagaan kesihatan untuk mengetahui sama ada PrEP sesuai dan tersedia untuk anda.",
+  },
+  {
+    id: 21,
+    question: "HIV dan AIDS adalah perkara yang sama",
+    options: ["Mitos", "Fakta"],
+    answer: "Mitos",
+    explanation:
+      "HIV ialah virus yang boleh melemahkan sistem imun. AIDS pula adalah peringkat paling lanjut jangkitan HIV yang tidak dirawat, apabila sistem imun telah rosak teruk. Tidak semua orang dengan HIV akan menghidap AIDS — dengan rawatan yang berkesan, kebanyakan individu yang hidup dengan HIV tidak akan berkembang menjadi AIDS.",
+  },
+  {
+    id: 22,
+    question: "Anda patut berhenti mengambil ubat HIV sebaik sahaja anda berasa sihat",
+    options: ["Mitos", "Fakta"],
+    answer: "Mitos",
+    explanation:
+      "Walaupun anda berasa sihat sepenuhnya, virus masih berada dalam badan anda. Berhenti rawatan membenarkan virus membiak semula, merosakkan sistem imun anda, dan mungkin menjadi rintang kepada ubat. Rawatan HIV adalah seumur hidup — jangan sekali-kali berhenti atau mengubahnya tanpa berbincang dengan doktor anda dahulu.",
+  },
+  {
+    id: 23,
+    question: "Ujian darah berkala adalah sebahagian penting dalam menguruskan HIV",
+    options: ["Mitos", "Fakta"],
+    answer: "Fakta",
+    explanation:
+      "Ujian darah berkala seperti kiraan CD4 dan viral load membantu pasukan penjagaan kesihatan anda memastikan rawatan anda berkesan dan sistem imun anda sihat. Ujian lain (buah pinggang, hati, gula darah dan kolesterol) membantu memantau kesihatan keseluruhan anda dan mengesan sebarang kesan sampingan ubat lebih awal.",
+  },
+  {
+    id: 24,
+    question: "Individu yang hidup dengan HIV boleh berkongsi makanan dan ruang kediaman dengan selamat",
+    options: ["Mitos", "Fakta"],
+    answer: "Fakta",
+    explanation:
+      "HIV tidak tersebar melalui sentuhan harian. Berkongsi makanan, pinggan mangkuk, bilik air, ruang kediaman atau memeluk seseorang yang hidup dengan HIV tidak membawa risiko penularan. HIV hanya boleh ditularkan melalui cecair badan tertentu.",
+  },
+  {
+    id: 25,
+    question: "Hanya doktor anda yang boleh mengubah ubat atau dos HIV anda",
+    options: ["Mitos", "Fakta"],
+    answer: "Fakta",
+    explanation:
+      "Jangan sekali-kali mengubah, menghentikan atau melaraskan ubat HIV anda sendiri, dan berhati-hati dengan ubat lain, suplemen dan produk herba, yang boleh berinteraksi dengan ART. Sentiasa semak dengan doktor atau ahli farmasi anda sebelum memulakan sebarang ubat baharu.",
+  },
 ];
 
-function shuffle(array) {
-  let currentIndex = array.length,
-    randomIndex;
+// Return a shuffled copy (does not mutate the source array)
+function shuffle<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  let currentIndex = shuffled.length;
 
-  // While there remain elements to shuffle.
-  while (currentIndex != 0) {
-    // Pick a remaining element.
-    randomIndex = Math.floor(Math.random() * currentIndex);
+  while (currentIndex !== 0) {
+    const randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
 
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
+    [shuffled[currentIndex], shuffled[randomIndex]] = [
+      shuffled[randomIndex],
+      shuffled[currentIndex],
     ];
   }
 
-  return array;
+  return shuffled;
 }
 
 const bmQuestions = shuffle(initQuestions);

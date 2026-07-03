@@ -28,7 +28,7 @@ export default function VideoScreen() {
     MontserratMedium: require('../../assets/fonts/Montserrat-Medium.ttf'),
   });
 
-  // Initialize video players
+  // Initialize video players (only the video matching the app language is shown)
   const smartVideoPlayer = useVideoPlayer(require('../../assets/video/smart.mp4'), (player) => {
     player.loop = false;
   });
@@ -46,10 +46,12 @@ export default function VideoScreen() {
   if (!loaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8F00FF" />
+        <ActivityIndicator size="large" color="#16B394" />
       </View>
     );
   }
+
+  const activePlayer = language === 'bm' ? smartBmVideoPlayer : smartVideoPlayer;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -58,55 +60,52 @@ export default function VideoScreen() {
           <Ionicons name="chevron-back" size={40} color="#232323" />
         </TouchableOpacity>
       </View>
-      
+
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <Text style={styles.title}>
-            {language === 'bm' ? 'Video Pendidikan' : 'Educational Videos'}
-          </Text>
-          
-          <Text style={styles.description}>
             {language === 'bm'
-              ? 'Tonton video pendidikan tentang HIV dan cara menguruskan kesihatan anda.'
-              : 'Watch educational videos about HIV and how to manage your health.'}
+              ? 'Bagaimana Terapi Antiretroviral (ART) Berfungsi'
+              : 'How Antiretroviral Therapy (ART) Works'}
           </Text>
 
-          {/* English Video */}
+          <Text style={styles.description}>
+            {language === 'bm'
+              ? 'Tonton video ini untuk memahami bagaimana ubat antiretroviral berfungsi dan cara menguruskan kesihatan anda.'
+              : 'Watch this video to understand how antiretroviral medication works and how to manage your health.'}
+          </Text>
+
+          {/* Only the video matching the selected language is shown */}
           <View style={styles.videoCard}>
             <Text style={styles.videoTitle}>
-              {language === 'bm' ? 'SMART - Bahasa Inggeris' : 'SMART - English'}
+              {language === 'bm' ? 'SMART - Bahasa Malaysia' : 'SMART - English'}
             </Text>
             <VideoView
               style={styles.video}
-              player={smartVideoPlayer}
+              player={activePlayer}
               allowsFullscreen
               allowsPictureInPicture
               contentFit="contain"
             />
           </View>
 
-          {/* Bahasa Malaysia Video */}
-          <View style={styles.videoCard}>
-            <Text style={styles.videoTitle}>
-              {language === 'bm' ? 'SMART - Bahasa Malaysia' : 'SMART - Bahasa Malaysia'}
+          <View style={styles.languageHint}>
+            <Ionicons name="language" size={18} color="#1976D2" />
+            <Text style={styles.languageHintText}>
+              {language === 'bm'
+                ? 'Untuk menonton versi Bahasa Inggeris, tukar bahasa aplikasi di Tetapan.'
+                : 'To watch the Bahasa Malaysia version, change the app language in Settings.'}
             </Text>
-            <VideoView
-              style={styles.video}
-              player={smartBmVideoPlayer}
-              allowsFullscreen
-              allowsPictureInPicture
-              contentFit="contain"
-            />
           </View>
 
           <View style={styles.infoCard}>
             <Text style={styles.infoTitle}>
-              {language === 'bm' ? 'Tentang Video' : 'About the Videos'}
+              {language === 'bm' ? 'Tentang Video' : 'About the Video'}
             </Text>
             <Text style={styles.infoText}>
               {language === 'bm'
-                ? 'Video-video ini memberi maklumat penting tentang HIV, rawatan, dan cara menjaga kesihatan anda. Sila tonton dengan teliti untuk memahami dengan lebih baik.'
-                : 'These videos provide important information about HIV, treatment, and how to maintain your health. Please watch carefully to better understand.'}
+                ? 'Video ini memberi maklumat penting tentang HIV, rawatan, dan cara menjaga kesihatan anda. Sila tonton dengan teliti untuk memahami dengan lebih baik.'
+                : 'This video provides important information about HIV, treatment, and how to maintain your health. Please watch carefully to better understand.'}
             </Text>
           </View>
         </View>
@@ -134,7 +133,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: 'MontserratBold',
     color: '#333',
     marginBottom: 8,
@@ -150,7 +149,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 20,
+    marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -168,6 +167,22 @@ const styles = StyleSheet.create({
     height: (width - 64) * (9 / 16), // 16:9 aspect ratio
     borderRadius: 8,
     backgroundColor: '#000',
+  },
+  languageHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#F0F7FF',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 20,
+  },
+  languageHintText: {
+    flex: 1,
+    fontSize: 13,
+    fontFamily: 'MontserratMedium',
+    color: '#1976D2',
+    lineHeight: 19,
   },
   infoCard: {
     backgroundColor: '#E3F2FD',

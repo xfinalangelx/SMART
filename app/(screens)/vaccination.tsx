@@ -8,6 +8,7 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
@@ -17,24 +18,40 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import { VaccineKey } from '@/lib/supabase';
+import { SmartColors } from '@/constants/theme';
 
-type VaccineItem = {
-  id: string;
+type ListEntry = {
+  /** Built-in vaccines carry their state key; custom entries carry `custom:<id>`. */
+  refKey: string;
+  isCustom: boolean;
   title: string;
   dateFirst: string;
   dateSecond: string;
-  firstCap: string;
-  secondCap: string;
 };
+
+const VACCINE_ORDER: VaccineKey[] = [
+  'influenza',
+  'pneumococcal',
+  'pneumo13',
+  'pneumo20',
+  'pneumo23',
+  'hepatitisB',
+  'menACWY',
+  'menB',
+  'hpv',
+];
 
 export default function VaccinationScreen() {
   const { state, dispatch } = useAppData();
   const [language, setLanguage] = useState<'en' | 'bm'>('bm');
-  const [selectedItem, setSelectedItem] = useState<VaccineItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ListEntry | null>(null);
   const [firstDate, setFirstDate] = useState(new Date());
   const [secondDate, setSecondDate] = useState(new Date());
   const [showFirstPicker, setShowFirstPicker] = useState(false);
   const [showSecondPicker, setShowSecondPicker] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
   const insets = useSafeAreaInsets();
 
   const [loaded] = useFonts({
@@ -52,100 +69,127 @@ export default function VaccinationScreen() {
   if (!loaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8F00FF" />
+        <ActivityIndicator size="large" color={SmartColors.manage} />
       </View>
     );
   }
 
-  const vaccines = [
-    state.appData.checkList.vaccine.influenza,
-    state.appData.checkList.vaccine.pneumococcal,
-    state.appData.checkList.vaccine.pneumo13,
-    state.appData.checkList.vaccine.pneumo23,
-    state.appData.checkList.vaccine.hpv,
+  const vaccineMap = state.appData.checkList.vaccine;
+  const customVaccines = state.appData.checkList.customVaccines || [];
+
+  const entries: ListEntry[] = [
+    ...VACCINE_ORDER.filter((key) => vaccineMap[key]).map((key) => ({
+      refKey: key as string,
+      isCustom: false,
+      title: vaccineMap[key].title,
+      dateFirst: vaccineMap[key].dateFirst,
+      dateSecond: vaccineMap[key].dateSecond,
+    })),
+    ...customVaccines.map((item) => ({
+      refKey: `custom:${item.id}`,
+      isCustom: true,
+      title: item.title,
+      dateFirst: item.dateFirst,
+      dateSecond: item.dateSecond,
+    })),
   ];
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (!selectedItem) return;
 
-    const firstDateStr = moment(firstDate).format('YYYY/MM/DD');
-    const secondDateStr = moment(secondDate).format('YYYY/MM/DD');
+    const dateFirst = moment(firstDate).format('YYYY/MM/DD');
+    const dateSecond = moment(secondDate).format('YYYY/MM/DD');
 
-    const newData = {
-      ...selectedItem,
-      dateFirst: firstDateStr,
-      dateSecond: secondDateStr,
-    };
-
-    console.log('📅 Updating vaccine:', selectedItem.id, selectedItem.title);
-    console.log('📅 New dates:', firstDateStr, secondDateStr);
-    console.log('📅 Full payload:', JSON.stringify(newData, null, 2));
-
-    // Dispatch based on vaccine ID (convert to number for comparison)
-    const vaccineId = typeof selectedItem.id === 'string' ? parseInt(selectedItem.id) : selectedItem.id;
-    
-    switch (vaccineId) {
-      case 1:
-        dispatch({ type: 'MODIFY_INFLUENZA_VACCINE', payload: newData });
-        break;
-      case 2:
-        dispatch({ type: 'MODIFY_PNEUMO_VACCINE', payload: newData });
-        break;
-      case 3:
-        dispatch({ type: 'MODIFY_PNEUMO13_VACCINE', payload: newData });
-        break;
-      case 4:
-        dispatch({ type: 'MODIFY_PNEUMO23_VACCINE', payload: newData });
-        break;
-      case 5:
-        dispatch({ type: 'MODIFY_HPV_VACCINE', payload: newData });
-        break;
-      default:
-        console.error('❌ Unknown vaccine ID:', vaccineId);
+    if (selectedItem.isCustom) {
+      const id = selectedItem.refKey.replace('custom:', '');
+      await dispatch({
+        type: 'UPDATE_CUSTOM_VACCINE',
+        payload: { id, patch: { dateFirst, dateSecond } },
+      });
+    } else {
+      const key = selectedItem.refKey as VaccineKey;
+      await dispatch({
+        type: 'MODIFY_VACCINE',
+        payload: { key, item: { ...vaccineMap[key], dateFirst, dateSecond } },
+      });
     }
-
-    console.log('✅ Dispatch called, check for Supabase save logs');
 
     setSelectedItem(null);
     Alert.alert(
       language === 'bm' ? 'Berjaya' : 'Success',
-      language === 'bm' ? 'Vaksin berjaya dikemaskini' : 'Vaccine updated successfully'
+      language === 'bm' ? 'Rekod berjaya dikemaskini' : 'Record updated successfully'
     );
   };
 
-  const handleSelectItem = (item: VaccineItem) => {
+  const handleAddCustom = async () => {
+    if (!newTitle.trim()) {
+      Alert.alert(
+        language === 'bm' ? 'Ralat' : 'Error',
+        language === 'bm' ? 'Sila masukkan nama' : 'Please enter a name'
+      );
+      return;
+    }
+    await dispatch({
+      type: 'ADD_CUSTOM_VACCINE',
+      payload: {
+        id: Date.now().toString(),
+        title: newTitle.trim(),
+        dateFirst: 'XXXX/XX/XX',
+        dateSecond: 'XXXX/XX/XX',
+      },
+    });
+    setNewTitle('');
+    setShowAddForm(false);
+  };
+
+  const handleDeleteCustom = (entry: ListEntry) => {
+    Alert.alert(
+      language === 'bm' ? 'Padam' : 'Delete',
+      language === 'bm' ? `Padam "${entry.title}"?` : `Delete "${entry.title}"?`,
+      [
+        { text: language === 'bm' ? 'Batal' : 'Cancel', style: 'cancel' },
+        {
+          text: language === 'bm' ? 'Padam' : 'Delete',
+          style: 'destructive',
+          onPress: () =>
+            dispatch({
+              type: 'DELETE_CUSTOM_VACCINE',
+              payload: entry.refKey.replace('custom:', ''),
+            }),
+        },
+      ]
+    );
+  };
+
+  const handleSelectItem = (item: ListEntry) => {
     setSelectedItem(item);
-    
-    // Pre-fill dates with existing values
+
     if (item.dateFirst && item.dateFirst !== 'XXXX/XX/XX') {
-      const firstStr = item.dateFirst.replace(/\//g, '-');
-      setFirstDate(new Date(firstStr));
+      setFirstDate(new Date(item.dateFirst.replace(/\//g, '-')));
     } else {
       setFirstDate(new Date());
     }
-    
+
     if (item.dateSecond && item.dateSecond !== 'XXXX/XX/XX') {
-      const secondStr = item.dateSecond.replace(/\//g, '-');
-      setSecondDate(new Date(secondStr));
+      setSecondDate(new Date(item.dateSecond.replace(/\//g, '-')));
     } else {
       setSecondDate(new Date());
     }
   };
 
-  const renderItem = ({ item }: { item: VaccineItem }) => {
+  const renderItem = ({ item }: { item: ListEntry }) => {
     const today = new Date();
     let remain = 0;
     let color = 'green';
 
     if (item.dateSecond && item.dateSecond !== 'XXXX/XX/XX') {
-      const tempString = item.dateSecond.replace(/\//g, '-');
-      const tempDate = new Date(tempString);
+      const tempDate = new Date(item.dateSecond.replace(/\//g, '-'));
       const diffInDays = Math.floor((tempDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       remain = diffInDays;
 
       if (diffInDays <= 7) {
         color = 'red';
-      } else if (diffInDays >= 8 && diffInDays <= 19) {
+      } else if (diffInDays <= 19) {
         color = 'orange';
       }
     }
@@ -153,7 +197,11 @@ export default function VaccinationScreen() {
     return (
       <View style={styles.card}>
         <View style={styles.cardLeft}>
-          <Ionicons name="medkit" size={60} color="#8F00FF" />
+          <Ionicons
+            name={item.isCustom ? 'clipboard' : 'medkit'}
+            size={54}
+            color={SmartColors.manage}
+          />
           <View style={styles.cardInfo}>
             <Text style={styles.cardTitle}>{item.title}</Text>
             <Text style={styles.cardSubtext}>
@@ -171,9 +219,16 @@ export default function VaccinationScreen() {
           </View>
         </View>
         <View style={styles.cardRight}>
-          <TouchableOpacity onPress={() => handleSelectItem(item)}>
-            <Ionicons name="calendar-outline" size={30} color="#8F00FF" />
-          </TouchableOpacity>
+          <View style={styles.cardActions}>
+            <TouchableOpacity onPress={() => handleSelectItem(item)}>
+              <Ionicons name="calendar-outline" size={28} color={SmartColors.manage} />
+            </TouchableOpacity>
+            {item.isCustom && (
+              <TouchableOpacity onPress={() => handleDeleteCustom(item)}>
+                <Ionicons name="trash-outline" size={26} color="#FF3B30" />
+              </TouchableOpacity>
+            )}
+          </View>
           <View style={[styles.badge, { backgroundColor: color }]}>
             <Text style={styles.badgeText}>{remain}</Text>
           </View>
@@ -193,11 +248,53 @@ export default function VaccinationScreen() {
       <Text style={styles.title}>{language === 'bm' ? 'Vaksinasi' : 'Vaccination'}</Text>
 
       <FlatList
-        data={vaccines}
+        data={entries}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.refKey}
         contentContainerStyle={styles.list}
+        ListFooterComponent={
+          <TouchableOpacity style={styles.addButton} onPress={() => setShowAddForm(true)}>
+            <Ionicons name="add-circle-outline" size={22} color="#FFF" />
+            <Text style={styles.addButtonText}>
+              {language === 'bm' ? 'Tambah Lain-lain' : 'Add Others'}
+            </Text>
+          </TouchableOpacity>
+        }
       />
+
+      {/* Add custom item modal */}
+      <Modal visible={showAddForm} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              {language === 'bm' ? 'Tambah Senarai Lain' : 'Add Other Checklist Item'}
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder={
+                language === 'bm' ? 'Nama (cth: Vaksin Hepatitis A)' : 'Name (e.g: Hepatitis A vaccine)'
+              }
+              value={newTitle}
+              onChangeText={setNewTitle}
+              placeholderTextColor="#999"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={[styles.modalButton, styles.updateButton]} onPress={handleAddCustom}>
+                <Text style={styles.buttonText}>{language === 'bm' ? 'Tambah' : 'Add'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => {
+                  setShowAddForm(false);
+                  setNewTitle('');
+                }}
+              >
+                <Text style={styles.buttonText}>{language === 'bm' ? 'Batal' : 'Cancel'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Update Modal */}
       <Modal visible={selectedItem !== null} transparent animationType="slide">
@@ -209,7 +306,7 @@ export default function VaccinationScreen() {
               <Text style={styles.dateLabel}>{language === 'bm' ? 'Tarikh pertama:' : 'First date:'}</Text>
               <TouchableOpacity style={styles.dateButton} onPress={() => setShowFirstPicker(true)}>
                 <Text style={styles.dateText}>{moment(firstDate).format('DD/MM/YYYY')}</Text>
-                <Ionicons name="calendar-outline" size={20} color="#8F00FF" />
+                <Ionicons name="calendar-outline" size={20} color={SmartColors.manage} />
               </TouchableOpacity>
             </View>
 
@@ -229,7 +326,7 @@ export default function VaccinationScreen() {
               <Text style={styles.dateLabel}>{language === 'bm' ? 'Tarikh kedua:' : 'Second date:'}</Text>
               <TouchableOpacity style={styles.dateButton} onPress={() => setShowSecondPicker(true)}>
                 <Text style={styles.dateText}>{moment(secondDate).format('DD/MM/YYYY')}</Text>
-                <Ionicons name="calendar-outline" size={20} color="#8F00FF" />
+                <Ionicons name="calendar-outline" size={20} color={SmartColors.manage} />
               </TouchableOpacity>
             </View>
 
@@ -285,6 +382,7 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 16,
+    paddingBottom: 40,
   },
   card: {
     flexDirection: 'row',
@@ -306,14 +404,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    gap: 24,
+    gap: 20,
   },
   cardInfo: {
     flex: 1,
   },
   cardTitle: {
     fontFamily: 'MontserratSemiBold',
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 6,
   },
   cardSubtext: {
@@ -323,7 +421,12 @@ const styles = StyleSheet.create({
   },
   cardRight: {
     alignItems: 'center',
-    gap: 40,
+    gap: 24,
+  },
+  cardActions: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
   },
   badge: {
     borderRadius: 400,
@@ -336,6 +439,31 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: 'white',
     fontFamily: 'MontserratBold',
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: SmartColors.manage,
+    borderRadius: 10,
+    padding: 15,
+    marginTop: 4,
+  },
+  addButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontFamily: 'MontserratSemiBold',
+  },
+  input: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 14,
+    fontSize: 15,
+    fontFamily: 'MontserratMedium',
+    color: '#333',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   modalOverlay: {
     flex: 1,

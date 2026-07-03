@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -15,15 +15,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TriviaScreen() {
   const { state } = useAppData();
+  const insets = useSafeAreaInsets();
   const [language, setLanguage] = useState<'en' | 'bm'>('bm');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [score, setScore] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState<number>(0);
+  const scrollRef = useRef<ScrollView>(null);
 
   const [loaded] = useFonts({
     MontserratBold: require('../../assets/fonts/Montserrat-Bold.ttf'),
@@ -66,6 +69,7 @@ export default function TriviaScreen() {
       setCurrentIndex(currentIndex + 1);
       setSelectedAnswer(null);
       setShowExplanation(false);
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
     } else {
       // Quiz completed
       const percentage = Math.round((score / activeQuestions.length) * 100);
@@ -83,6 +87,7 @@ export default function TriviaScreen() {
               setAnsweredQuestions(0);
               setSelectedAnswer(null);
               setShowExplanation(false);
+              scrollRef.current?.scrollTo({ y: 0, animated: false });
             },
           },
           {
@@ -109,28 +114,39 @@ export default function TriviaScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.exitButton}>
-        <TouchableOpacity onPress={handleExit} style={styles.exitTouchable}>
-          <Ionicons name="exit-outline" size={30} color="white" />
+      <LinearGradient
+        colors={['#8F00FF', '#B500B9']}
+        style={[styles.header, { paddingTop: insets.top + 12 }]}
+        start={[0, 0]}
+        end={[1, 0]}
+      >
+        <View style={styles.headerRow}>
+          <Text style={styles.headerText}>
+            {language === 'bm' ? 'Soalan' : 'Question'} {currentIndex + 1}/{activeQuestions.length}
+          </Text>
+          <Text style={styles.scoreText}>
+            {language === 'bm' ? 'Skor' : 'Score'}: {score}/{answeredQuestions}
+          </Text>
+        </View>
+        {/* Clearly labelled exit button */}
+        <TouchableOpacity onPress={handleExit} style={styles.exitButton}>
+          <Ionicons name="close-circle" size={20} color="white" />
+          <Text style={styles.exitButtonText}>{language === 'bm' ? 'Keluar' : 'Exit'}</Text>
         </TouchableOpacity>
-      </View>
-
-      <LinearGradient colors={['#8F00FF', '#B500B9']} style={styles.header} start={[0, 0]} end={[1, 0]}>
-        <Text style={styles.headerText}>
-          {language === 'bm' ? 'Soalan' : 'Question'} {currentIndex + 1}/{activeQuestions.length}
-        </Text>
-        <Text style={styles.scoreText}>
-          {language === 'bm' ? 'Skor' : 'Score'}: {score}/{answeredQuestions}
-        </Text>
       </LinearGradient>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        ref={scrollRef}
+        style={styles.content}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.questionCard}>
           <Text style={styles.questionText}>{currentQuestion.question}</Text>
         </View>
 
         <View style={styles.optionsContainer}>
-          {currentQuestion.options.map((option, index) => {
+          {currentQuestion.options.map((option: string, index: number) => {
             const isSelected = selectedAnswer === option;
             const isAnswerCorrect = option === currentQuestion.answer;
 
@@ -177,9 +193,12 @@ export default function TriviaScreen() {
             <Text style={styles.explanationText}>{currentQuestion.explanation}</Text>
           </View>
         )}
+      </ScrollView>
 
-        {showExplanation && (
-          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+      {/* Next button pinned outside the scroll area so long explanations never hide it */}
+      {showExplanation && (
+        <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
+          <TouchableOpacity onPress={handleNext}>
             <LinearGradient colors={['#8F00FF', '#B500B9']} style={styles.nextButtonGradient} start={[0, 0]} end={[1, 0]}>
               <Text style={styles.nextButtonText}>
                 {currentIndex < activeQuestions.length - 1
@@ -192,8 +211,8 @@ export default function TriviaScreen() {
               </Text>
             </LinearGradient>
           </TouchableOpacity>
-        )}
-      </ScrollView>
+        </View>
+      )}
     </View>
   );
 }
@@ -209,18 +228,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5F5F5',
   },
-  exitButton: {
-    position: 'absolute',
-    top: 60,
-    right: 20,
-    zIndex: 1000,
-  },
-  exitTouchable: {
-    padding: 8,
-  },
   header: {
     padding: 20,
-    paddingTop: 100,
+    paddingBottom: 16,
+  },
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -235,9 +247,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'MontserratSemiBold',
   },
+  exitButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    marginTop: 10,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+  },
+  exitButtonText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontFamily: 'MontserratSemiBold',
+  },
   content: {
     flex: 1,
+  },
+  contentContainer: {
     padding: 16,
+    paddingBottom: 24,
   },
   questionCard: {
     backgroundColor: '#FFFFFF',
@@ -296,8 +327,12 @@ const styles = StyleSheet.create({
     color: '#555',
     lineHeight: 22,
   },
-  nextButton: {
-    marginBottom: 20,
+  footer: {
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    backgroundColor: '#F5F5F5',
+    borderTopWidth: 1,
+    borderTopColor: '#E8E8E8',
   },
   nextButtonGradient: {
     borderRadius: 12,
