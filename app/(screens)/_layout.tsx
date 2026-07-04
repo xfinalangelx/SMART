@@ -20,6 +20,8 @@ export default function ScreensLayout() {
       <Stack.Screen name="blood-sugar-graph" />
       <Stack.Screen name="renal-graph" />
       <Stack.Screen name="lipid-graph" />
+      <Stack.Screen name="liver-graph" />
+      <Stack.Screen name="custom-analysis" />
       
       {/* Checklist section */}
       <Stack.Screen name="all-checklist" />
@@ -34,6 +36,9 @@ export default function ScreensLayout() {
       <Stack.Screen name="organizations" />
       <Stack.Screen name="websites" />
       <Stack.Screen name="apps" />
+
+      {/* General */}
+      <Stack.Screen name="disclaimer" />
     </Stack>
   );
 }

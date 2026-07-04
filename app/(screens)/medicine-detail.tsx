@@ -15,9 +15,45 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMedicineData } from '@/utils/medicineHelper';
 
+/** An expandable list section: shows a heading and reveals its lines on tap. */
+function CollapsibleList({
+  label,
+  lines,
+  emptyLabel,
+  initiallyOpen = false,
+}: {
+  label: string;
+  lines: string[];
+  emptyLabel: string;
+  initiallyOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(initiallyOpen);
+  const cleanLines = lines.map((line) => line.trim()).filter((line) => line.length > 0);
+
+  return (
+    <View style={styles.collapsible}>
+      <TouchableOpacity style={styles.collapsibleHeader} onPress={() => setOpen(!open)}>
+        <Text style={styles.infoLabel}>{label}</Text>
+        <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={20} color="#555" />
+      </TouchableOpacity>
+      {open &&
+        (cleanLines.length === 0 ? (
+          <Text style={styles.listItem}>{emptyLabel}</Text>
+        ) : (
+          cleanLines.map((line, index) => (
+            <Text key={index} style={styles.listItem}>
+              {'•'} {line}
+            </Text>
+          ))
+        ))}
+    </View>
+  );
+}
+
 export default function MedicineDetailScreen() {
   const { state } = useAppData();
   const [language, setLanguage] = useState<'en' | 'bm'>('bm');
+  const [showLessCommon, setShowLessCommon] = useState(false);
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
   const filter = parseInt(params.filter as string);
@@ -39,7 +75,7 @@ export default function MedicineDetailScreen() {
   if (!loaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8F00FF" />
+        <ActivityIndicator size="large" color="#16B394" />
       </View>
     );
   }
@@ -55,7 +91,13 @@ export default function MedicineDetailScreen() {
     );
   }
 
-  const sideEffect = dataItem.sideEffects?.split('\n') || [];
+  const sideEffectGroups = (dataItem.sideEffects?.split('\n') || [])
+    .map((line: string) => line.trim())
+    .filter((line: string) => line.length > 0);
+  // The first group holds the common side effects; the rest are less common
+  const commonSideEffects = sideEffectGroups.slice(0, 1);
+  const lessCommonSideEffects = sideEffectGroups.slice(1);
+
   const notTakenMed = dataItem.notTakenMed?.split('\n') || [];
   const interactions = dataItem.interaction?.split('\n') || [];
 
@@ -139,34 +181,74 @@ export default function MedicineDetailScreen() {
           </View>
         </View>
 
-        {/* Side Effects Section */}
+        {/* Side Effects Section: common shown bold + underlined, less common expandable */}
         <View style={[styles.section, styles.orangeSection]}>
-          <Text style={styles.sectionTitle}>{language === 'en' ? 'Side Effects' : 'Kesan Sampingan Utama'}</Text>
+          <Text style={styles.sectionTitle}>{language === 'en' ? 'Side Effects' : 'Kesan Sampingan'}</Text>
           <View style={styles.infoBlock}>
-            {sideEffect.map((line: string, index: number) => (
-              <Text key={index} style={styles.listItem}>
+            <Text style={styles.infoLabel}>
+              {language === 'en' ? 'Common side effects' : 'Kesan sampingan biasa'}
+            </Text>
+            {commonSideEffects.map((line: string, index: number) => (
+              <Text key={index} style={styles.commonSideEffect}>
                 {line}
               </Text>
             ))}
+
+            {lessCommonSideEffects.length > 0 && (
+              <>
+                <TouchableOpacity
+                  style={styles.expandButton}
+                  onPress={() => setShowLessCommon(!showLessCommon)}
+                >
+                  <Text style={styles.expandButtonText}>
+                    {showLessCommon
+                      ? language === 'en'
+                        ? 'Hide less common side effects'
+                        : 'Sembunyikan kesan sampingan kurang biasa'
+                      : language === 'en'
+                        ? 'Show less common side effects'
+                        : 'Lihat kesan sampingan kurang biasa'}
+                  </Text>
+                  <Ionicons
+                    name={showLessCommon ? 'chevron-up' : 'chevron-down'}
+                    size={18}
+                    color="#B4531F"
+                  />
+                </TouchableOpacity>
+                {showLessCommon &&
+                  lessCommonSideEffects.map((line: string, index: number) => (
+                    <Text key={index} style={styles.listItem}>
+                      {line}
+                    </Text>
+                  ))}
+              </>
+            )}
           </View>
         </View>
 
         {/* Precautions Section */}
         <View style={[styles.section, styles.yellowSection]}>
-          <Text style={styles.sectionTitle}>{language === 'en' ? 'Precautions' : 'Pemantauan'}</Text>
+          <Text style={styles.sectionTitle}>{language === 'en' ? 'Precautions' : 'Langkah Berjaga-jaga'}</Text>
           <View style={styles.infoBlock}>
-            <Text style={styles.infoLabel}>{language === 'en' ? 'Should Not be Taken With' : 'Tidak Boleh Diambil Dengan'}</Text>
-            {notTakenMed.map((line: string, index: number) => (
-              <Text key={index} style={styles.listItem}>
-                {line}
-              </Text>
-            ))}
-            <Text style={[styles.infoLabel, { marginTop: 10 }]}>{language === 'en' ? 'Interactions' : 'Interaksi'}</Text>
-            {interactions.map((line: string, index: number) => (
-              <Text key={index} style={styles.listItem}>
-                {line}
-              </Text>
-            ))}
+            <CollapsibleList
+              label={
+                language === 'en'
+                  ? 'Unless your doctor tells you to, DO NOT take this medication with:'
+                  : 'Kecuali diarahkan oleh doktor anda, JANGAN ambil ubat ini bersama:'
+              }
+              lines={notTakenMed}
+              emptyLabel={language === 'en' ? 'No data' : 'Tiada data'}
+              initiallyOpen
+            />
+            <CollapsibleList
+              label={
+                language === 'en'
+                  ? 'This medication may be taken together, but your doctor may need to adjust your dose or monitor you more closely:'
+                  : 'Ubat ini boleh diambil bersama, tetapi doktor anda mungkin perlu melaraskan dos atau memantau anda dengan lebih rapat:'
+              }
+              lines={interactions}
+              emptyLabel={language === 'en' ? 'No data' : 'Tiada data'}
+            />
           </View>
         </View>
       </ScrollView>
@@ -243,5 +325,33 @@ const styles = StyleSheet.create({
   listItem: {
     marginTop: 5,
     fontFamily: 'MontserratRegular',
+  },
+  commonSideEffect: {
+    marginTop: 5,
+    fontFamily: 'MontserratSemiBold',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    lineHeight: 21,
+  },
+  expandButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 12,
+    paddingVertical: 4,
+  },
+  expandButtonText: {
+    fontFamily: 'MontserratSemiBold',
+    fontSize: 13,
+    color: '#B4531F',
+  },
+  collapsible: {
+    marginBottom: 12,
+  },
+  collapsibleHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 8,
   },
 });

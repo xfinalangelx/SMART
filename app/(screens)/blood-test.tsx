@@ -8,6 +8,7 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
+  Switch,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
@@ -17,24 +18,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import { BloodTestItem } from '@/lib/supabase';
+import { SmartColors } from '@/constants/theme';
 
-type BloodTestItem = {
-  id: string;
-  title: string;
-  dateFirst: string;
-  dateSecond: string;
-  firstCap: string;
-  secondCap: string;
-};
+type TestKey = 'renal' | 'liver' | 'glucose';
+
+type ListEntry = BloodTestItem & { key: TestKey };
 
 export default function BloodTestScreen() {
   const { state, dispatch } = useAppData();
   const [language, setLanguage] = useState<'en' | 'bm'>('bm');
-  const [selectedItem, setSelectedItem] = useState<BloodTestItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ListEntry | null>(null);
   const [firstDate, setFirstDate] = useState(new Date());
   const [secondDate, setSecondDate] = useState(new Date());
   const [showFirstPicker, setShowFirstPicker] = useState(false);
   const [showSecondPicker, setShowSecondPicker] = useState(false);
+  const [fastingReminder, setFastingReminder] = useState(false);
   const insets = useSafeAreaInsets();
 
   const [loaded] = useFonts({
@@ -52,51 +51,35 @@ export default function BloodTestScreen() {
   if (!loaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#8F00FF" />
+        <ActivityIndicator size="large" color="#E91E63" />
       </View>
     );
   }
 
-  const bloodTests = [
-    state.appData.checkList.bloodTest.renal,
-    state.appData.checkList.bloodTest.liver,
-    state.appData.checkList.bloodTest.glucose,
-  ];
+  const bloodTests: ListEntry[] = (['renal', 'liver', 'glucose'] as TestKey[]).map((key) => ({
+    ...state.appData.checkList.bloodTest[key],
+    key,
+  }));
 
-  const handleUpdate = () => {
+  const notificationsEnabled = state.appData.settings.notificationsEnabled;
+
+  const handleUpdate = async () => {
     if (!selectedItem) return;
 
-    const firstDateStr = moment(firstDate).format('YYYY/MM/DD');
-    const secondDateStr = moment(secondDate).format('YYYY/MM/DD');
+    const { key, ...item } = selectedItem;
 
-    const newData = {
-      ...selectedItem,
-      dateFirst: firstDateStr,
-      dateSecond: secondDateStr,
-    };
-
-    console.log('📊 Updating blood test:', selectedItem.id, selectedItem.title);
-    console.log('📊 New dates:', firstDateStr, secondDateStr);
-    console.log('📊 Full payload:', JSON.stringify(newData, null, 2));
-
-    // Dispatch based on test ID (convert to number for comparison)
-    const testId = typeof selectedItem.id === 'string' ? parseInt(selectedItem.id) : selectedItem.id;
-    
-    switch (testId) {
-      case 6:
-        dispatch({ type: 'MODIFY_RENAL_TEST', payload: newData });
-        break;
-      case 7:
-        dispatch({ type: 'MODIFY_LIVER_TEST', payload: newData });
-        break;
-      case 8:
-        dispatch({ type: 'MODIFY_GLUCOSE_TEST', payload: newData });
-        break;
-      default:
-        console.error('❌ Unknown test ID:', testId);
-    }
-
-    console.log('✅ Dispatch called, check for Supabase save logs');
+    await dispatch({
+      type: 'MODIFY_BLOOD_TEST',
+      payload: {
+        key,
+        item: {
+          ...item,
+          dateFirst: moment(firstDate).format('YYYY/MM/DD'),
+          dateSecond: moment(secondDate).format('YYYY/MM/DD'),
+          fastingReminder,
+        },
+      },
+    });
 
     setSelectedItem(null);
     Alert.alert(
@@ -105,39 +88,36 @@ export default function BloodTestScreen() {
     );
   };
 
-  const handleSelectItem = (item: BloodTestItem) => {
+  const handleSelectItem = (item: ListEntry) => {
     setSelectedItem(item);
-    
-    // Pre-fill dates with existing values
+    setFastingReminder(!!item.fastingReminder);
+
     if (item.dateFirst && item.dateFirst !== 'XXXX/XX/XX') {
-      const firstStr = item.dateFirst.replace(/\//g, '-');
-      setFirstDate(new Date(firstStr));
+      setFirstDate(new Date(item.dateFirst.replace(/\//g, '-')));
     } else {
       setFirstDate(new Date());
     }
-    
+
     if (item.dateSecond && item.dateSecond !== 'XXXX/XX/XX') {
-      const secondStr = item.dateSecond.replace(/\//g, '-');
-      setSecondDate(new Date(secondStr));
+      setSecondDate(new Date(item.dateSecond.replace(/\//g, '-')));
     } else {
       setSecondDate(new Date());
     }
   };
 
-  const renderItem = ({ item }: { item: BloodTestItem }) => {
+  const renderItem = ({ item }: { item: ListEntry }) => {
     const today = new Date();
     let remain = 0;
     let color = 'green';
 
     if (item.dateSecond && item.dateSecond !== 'XXXX/XX/XX') {
-      const tempString = item.dateSecond.replace(/\//g, '-');
-      const tempDate = new Date(tempString);
+      const tempDate = new Date(item.dateSecond.replace(/\//g, '-'));
       const diffInDays = Math.floor((tempDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       remain = diffInDays;
 
       if (diffInDays <= 7) {
         color = 'red';
-      } else if (diffInDays >= 8 && diffInDays <= 19) {
+      } else if (diffInDays <= 19) {
         color = 'orange';
       }
     }
@@ -160,6 +140,14 @@ export default function BloodTestScreen() {
               {language === 'bm' ? 'Hari berbaki: ' : 'Days remaining: '}
               {remain}
             </Text>
+            {item.fastingReminder && (
+              <View style={styles.fastingChip}>
+                <Ionicons name="moon" size={12} color="#7B61FF" />
+                <Text style={styles.fastingChipText}>
+                  {language === 'bm' ? 'Peringatan berpuasa' : 'Fasting reminder'}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
         <View style={styles.cardRight}>
@@ -187,7 +175,7 @@ export default function BloodTestScreen() {
       <FlatList
         data={bloodTests}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.key}
         contentContainerStyle={styles.list}
       />
 
@@ -236,6 +224,31 @@ export default function BloodTestScreen() {
                 }}
                 minimumDate={firstDate}
               />
+            )}
+
+            <View style={styles.fastingRow}>
+              <View style={styles.fastingInfo}>
+                <Text style={styles.dateLabel}>
+                  {language === 'bm' ? 'Ingatkan saya berpuasa' : 'Remind me to fast'}
+                </Text>
+                <Text style={styles.fastingHint}>
+                  {language === 'bm'
+                    ? 'Peringatan pada 8 malam sebelum ujian (puasa 8-10 jam).'
+                    : 'A reminder at 8pm the night before the test (fast 8-10 hours).'}
+                </Text>
+              </View>
+              <Switch
+                value={fastingReminder}
+                onValueChange={setFastingReminder}
+                trackColor={{ true: SmartColors.manage }}
+              />
+            </View>
+            {fastingReminder && !notificationsEnabled && (
+              <Text style={styles.fastingWarning}>
+                {language === 'bm'
+                  ? 'Nota: hidupkan notifikasi dalam Tetapan untuk menerima peringatan ini.'
+                  : 'Note: turn on notifications in Settings to receive this reminder.'}
+              </Text>
             )}
 
             <View style={styles.modalButtons}>
@@ -313,6 +326,22 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginTop: 3,
   },
+  fastingChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#F0EBFF',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginTop: 6,
+  },
+  fastingChipText: {
+    fontSize: 10,
+    fontFamily: 'MontserratSemiBold',
+    color: '#7B61FF',
+  },
   cardRight: {
     alignItems: 'center',
     gap: 40,
@@ -364,6 +393,27 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontFamily: 'MontserratMedium',
+  },
+  fastingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+    gap: 12,
+  },
+  fastingInfo: {
+    flex: 1,
+  },
+  fastingHint: {
+    fontFamily: 'MontserratMedium',
+    fontSize: 12,
+    color: '#777',
+  },
+  fastingWarning: {
+    fontFamily: 'MontserratMedium',
+    fontSize: 12,
+    color: '#E65100',
+    marginBottom: 4,
   },
   modalButtons: {
     flexDirection: 'row',

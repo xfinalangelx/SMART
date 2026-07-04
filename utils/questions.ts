@@ -31,7 +31,7 @@ const initQuestions: TriviaQuestion[] = [
     options: ['Myth', 'Fact'],
     answer: 'Myth',
     explanation:
-      "Sweat, tears, urine or faeces of someone who has HIV can't be transmitted through sweat, tears, urine or faeces from a person who is infected with HIV",
+      "HIV is not present in sweat, tears, urine or faeces in amounts that can infect another person. HIV is only transmitted through specific bodily fluids — blood, semen, vaginal and rectal fluids, and breast milk — so you cannot get HIV from contact with these other bodily fluids.",
   },
   {
     id: 4,
@@ -48,7 +48,7 @@ const initQuestions: TriviaQuestion[] = [
     options: ['Myth', 'Fact'],
     answer: 'Myth',
     explanation:
-      'Not everyone has symptoms when first infected with HIV. Many people have flu-like symptoms, called "acute retroviral syndrome" (ARS) or "primary HIV infection," within 2 to 4 weeks of being infected with HIV. Symptoms may include fever, swollen glands, sore throat, rash, fatigue, muscle and joint aches, and headache. Symptoms may last a few days to a few weeks. However, these symptoms resemble many other infections and the only way to know for sure if you are infected with HIV is to get tested.',
+      'You cannot get HIV from insects or animal bites. When an insect such as a mosquito bites you, it injects its own saliva and sucks your blood — it does not inject the blood of the last person or animal it bit. HIV also cannot survive or reproduce inside insects. HIV stands for Human Immunodeficiency Virus, which means the infection can only be passed between humans.',
   },
   {
     id: 6,
@@ -143,6 +143,78 @@ const initQuestions: TriviaQuestion[] = [
     answer: 'Fact',
     explanation:
       'The risk of HIV from oral sex is very small unless you or your partner has large open sores on the genital area or bleeding gums/sores in your mouth.',
+  },
+  {
+    id: 17,
+    question: 'Taking your HIV medication (ART) every day as prescribed is important',
+    options: ['Myth', 'Fact'],
+    answer: 'Fact',
+    explanation:
+      'Taking antiretroviral therapy (ART) exactly as prescribed, every day, keeps the amount of virus in your body low and protects your immune system. Missing doses can allow the virus to multiply and become resistant to the medication, which makes it harder to treat. Good adherence is the single most important thing you can do to stay healthy.',
+  },
+  {
+    id: 18,
+    question: 'A person living with HIV who is on effective treatment can live a long, healthy life',
+    options: ['Myth', 'Fact'],
+    answer: 'Fact',
+    explanation:
+      'With effective antiretroviral treatment, people living with HIV can expect a near-normal life expectancy. Modern treatment keeps the virus under control, protects the immune system, and allows people to work, have relationships and families, and live full lives.',
+  },
+  {
+    id: 19,
+    question: 'A mother living with HIV will always pass HIV to her baby',
+    options: ['Myth', 'Fact'],
+    answer: 'Myth',
+    explanation:
+      'With the right care, the risk of passing HIV from mother to baby can be reduced to less than 1%. This includes taking antiretroviral treatment during pregnancy, appropriate delivery care, medication for the baby after birth, and following medical advice about feeding. Speak to your healthcare provider about planning a pregnancy.',
+  },
+  {
+    id: 20,
+    question: 'PrEP (pre-exposure prophylaxis) can help HIV-negative people avoid getting HIV',
+    options: ['Myth', 'Fact'],
+    answer: 'Fact',
+    explanation:
+      'PrEP is medication taken by people who are HIV-negative to greatly reduce their risk of getting HIV. When taken as prescribed, it is highly effective. PrEP does not protect against other sexually transmitted infections, so condoms are still recommended. Speak to a healthcare provider to find out if PrEP is right and available for you.',
+  },
+  {
+    id: 21,
+    question: 'HIV and AIDS are exactly the same thing',
+    options: ['Myth', 'Fact'],
+    answer: 'Myth',
+    explanation:
+      'HIV is the virus that can weaken the immune system. AIDS is the most advanced stage of untreated HIV infection, when the immune system is badly damaged. Not everyone with HIV develops AIDS — with effective treatment, most people living with HIV never progress to AIDS.',
+  },
+  {
+    id: 22,
+    question: 'You should stop taking your HIV medication once you feel well',
+    options: ['Myth', 'Fact'],
+    answer: 'Myth',
+    explanation:
+      'Even when you feel completely well, the virus is still in your body. Stopping treatment allows the virus to multiply again, damage your immune system, and potentially become resistant to medication. HIV treatment is lifelong — never stop or change it without discussing it with your doctor first.',
+  },
+  {
+    id: 23,
+    question: 'Regular blood tests are an important part of managing HIV',
+    options: ['Myth', 'Fact'],
+    answer: 'Fact',
+    explanation:
+      'Regular blood tests such as CD4 count and viral load help your healthcare team check that your treatment is working and that your immune system is healthy. Other tests (kidney, liver, blood sugar and cholesterol) help monitor your overall health and catch any side effects of medication early.',
+  },
+  {
+    id: 24,
+    question: 'People living with HIV can safely share meals and living spaces with others',
+    options: ['Myth', 'Fact'],
+    answer: 'Fact',
+    explanation:
+      'HIV is not spread through everyday contact. Sharing meals, dishes, bathrooms, living spaces or hugging someone living with HIV carries no risk of transmission. HIV can only be passed through specific bodily fluids.',
+  },
+  {
+    id: 25,
+    question: 'Only your doctor can change your HIV medication or dose',
+    options: ['Myth', 'Fact'],
+    answer: 'Fact',
+    explanation:
+      'Never change, stop or adjust your HIV medication on your own, and be careful with other medicines, supplements and herbal products, which can interact with ART. Always check with your doctor or pharmacist before starting anything new.',
   },
 ];
 

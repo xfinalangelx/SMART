@@ -18,8 +18,8 @@ const data: DataStructure = {
   knowledgeList: [
     {
       id: 1,
-      title: 'Video',
-      bmTitle: 'Video',
+      title: 'How Antiretroviral Therapy (ART) Works',
+      bmTitle: 'Bagaimana Terapi Antiretroviral (ART) Berfungsi',
       icon: require('../assets/img/knowledgeVideoList.png'),
       navi: 'video',
       filter: 'video',
@@ -53,7 +53,7 @@ const data: DataStructure = {
     {
       id: 2,
       title: 'Blood Sugar',
-      bmTitle: 'Blood Sugar',
+      bmTitle: 'Gula Darah',
       icon: require('../assets/img/bloodSugar.png'),
       navi: 'blood-sugar-graph',
       filter: 'blood',
@@ -61,7 +61,7 @@ const data: DataStructure = {
     {
       id: 3,
       title: 'Renal Profile',
-      bmTitle: 'Renal Profile',
+      bmTitle: 'Profil Buah Pinggang',
       icon: require('../assets/img/renalProfile.png'),
       navi: 'renal-graph',
       filter: 'renal',
@@ -69,10 +69,26 @@ const data: DataStructure = {
     {
       id: 4,
       title: 'Lipid Profile',
-      bmTitle: 'Lipid Profile',
+      bmTitle: 'Profil Lipid',
       icon: require('../assets/img/lipidProfile.png'),
       navi: 'lipid-graph',
       filter: 'lipid',
+    },
+    {
+      id: 5,
+      title: 'Liver Profile',
+      bmTitle: 'Profil Hati',
+      icon: require('../assets/img/liverProfile.png'),
+      navi: 'liver-graph',
+      filter: 'liver',
+    },
+    {
+      id: 6,
+      title: 'Other Analyses',
+      bmTitle: 'Analisis Lain',
+      icon: require('../assets/img/Lab.png'),
+      navi: 'custom-analysis',
+      filter: 'custom',
     },
   ],
   checklistList: [
